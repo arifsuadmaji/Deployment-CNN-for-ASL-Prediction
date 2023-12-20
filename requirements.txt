@@ -1,0 +1,6 @@
+flask
+gunicorn
+pandas
+tensorflow
+numpy
+scikit-learn == 1.2.2

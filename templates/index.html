@@ -1,0 +1,124 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>ASL Detection App</title>
+
+  <!-- Bootstrap CSS -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+    }
+
+    .container {
+      margin-top: 50px;
+    }
+
+    .jumbotron {
+      background-color: #007bff;
+      color: #fff;
+      text-align: center;
+      padding: 40px;
+    }
+
+    #result-container {
+      margin-top: 30px;
+      margin-bottom: 100px;
+    }
+
+    #predicted-image {
+      max-width: 100%;
+      height: auto;
+      margin-top: 20px;
+    }
+
+    #footer {
+      background-color: #007bff;
+      color: #fff;
+      text-align: center;
+      padding: 5px;
+      position:fixed;
+      bottom: 0;
+      width: 100%;
+      z-index: 1000;
+    }
+  </style>
+</head>
+
+<body>
+
+  <div class="jumbotron">
+    <h1 class="display-4">ASL Detection</h1>
+    <p class="lead">Upload a sign language image to get predictions!</p>
+  </div>
+
+  <div class="container">
+    <form id="upload-form" enctype="multipart/form-data">
+      <div class="mb-3">
+        <label for="file" class="form-label">Choose an image</label>
+        <input type="file" class="form-control" id="file" accept="image/*" required>
+      </div>
+      <button type="button" class="btn btn-primary" onclick="predict()">Predict</button>
+    </form>
+
+    <div id="result-container" class="mt-4">
+    </div>
+  </div>
+
+  <div id="footer">
+    <p>Copyright | Arif Su'admaji 2023</p>
+  </div>
+
+  <!-- Bootstrap JS and Popper.js (required for Bootstrap) -->
+  <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+
+  <!-- Custom JavaScript for the ASL Detection App -->
+  <script>
+    function predict() {
+      var fileInput = document.getElementById('file');
+      var file = fileInput.files[0];
+
+      var formData = new FormData();
+      formData.append('file', file);
+
+      $.ajax({
+        url: '/predict',
+        type: 'POST',
+        data: formData,
+        contentType: false,
+        processData: false,
+        success: function (response) {
+          displayResult(response, file);
+        },
+        error: function (error) {
+          console.error('Error predicting:', error);
+        }
+      });
+    }
+
+    function displayResult(prediction, file) {
+      var resultContainer = document.getElementById('result-container');
+      resultContainer.innerHTML = '';
+
+      var predictedLabel = prediction.predicted_label;
+
+      var resultText = document.createElement('h2');
+      resultText.textContent = 'Prediction: ' + predictedLabel;
+      resultContainer.appendChild(resultText);
+
+      var imageElement = document.createElement('img');
+      imageElement.src = URL.createObjectURL(file);  // Menampilkan gambar yang diupload
+      imageElement.alt = 'Uploaded Image';
+      imageElement.id = 'predicted-image';
+      resultContainer.appendChild(imageElement);
+    }
+  </script>
+
+
+</body>
+
+</html>
